@@ -1,29 +1,24 @@
 package main
 
 import (
-    "github.com/julienschmidt/httprouter"
-	"gopkg.in/mgo.v2"
+	"log"
 	"net/http"
 
-	"atique.ahmad/crudproject/controllers"
+	"github.com/gorilla/mux"
 )
 
 func main() {
-    
-	r := httprouter.New()
-	uc := controllers.NewUserController(getSession())
-	r.GET("/user/:id", uc.GetUser)
-	r.POST("/user", uc.CreateUser)
-	r.Delete("/user/:id", uc.DeleteUser)
-	http.ListenAndServe("localhost:9000", r)
 
-}
+	route := mux.NewRouter()
+	s := route.PathPrefix("/api").Subrouter() //Base Path
 
-func getSession() *mgo.Session{
-	
-	s, err := mgo.Dial("mongodb://localhost:27107")
-	if err != nil{
-		panic(err)
-	}
-	return s
+	//Routes
+
+	s.HandleFunc("/createProfile", createProfile).Methods("POST")
+	s.HandleFunc("/getAllUsers", getAllUsers).Methods("GET")
+	s.HandleFunc("/getUserProfile", getUserProfile).Methods("POST")
+	s.HandleFunc("/updateProfile", updateProfile).Methods("PUT")
+	s.HandleFunc("/deleteProfile/{id}", deleteProfile).Methods("DELETE")
+
+	log.Fatal(http.ListenAndServe(":8000", s)) // Run Server
 }
