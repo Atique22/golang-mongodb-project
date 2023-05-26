@@ -20,5 +20,5 @@ go get -u github.com/gorilla/mux
 run server
 
 ```
-go run *go
+go run .
 ```
